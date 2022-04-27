@@ -9,7 +9,7 @@ contract Main {
     // y = finalPrice
     // p = floorPrice
     // x = maxima
-    // ✨  If t < 0 then the rest of the equation isn't computed and calcPrice returns floorPrice ✨ //
+    // ✨  If t < 1 then the rest of the equation isn't computed and calcPrice returns floorPrice ✨ //
     // t = (timeStamp + decayLength) - block.timestamp.
     // decayLength = # of blocks to decay till floorPrice
     //Reminder: t =< x
@@ -19,7 +19,6 @@ contract Main {
 
     // Floor price of asset
     uint256 public floorPrice; // p
-    /*   With some funky math we can have t be 0.1 or smaller and achieve a greater maxima */
     uint256 public maxima; // t
 
     // Both used to calculate t //
