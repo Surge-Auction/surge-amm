@@ -1,5 +1,3 @@
-<img align="right" width="150" height="150" top="100" src="./assets/readme.jpg">
-
 # Variable-Price-Auction • [![tests](https://github.com/abrandec/variable-price-auction/actions/workflows/tests.yml/badge.svg)](https://github.com/abradec/variable-price-auction/actions/workflows/tests.yml) [![lints](https://github.com/abrandec/variable-price-auction/actions/workflows/lints.yml/badge.svg)](https://github.com/abrandec/variable-price-auction/actions/workflows/lints.yml) ![GitHub](https://img.shields.io/github/license/abrandec/variable-price-auction)  ![GitHub package.json version](https://img.shields.io/github/package-json/v/abrandec/variable-price-auction)
 
 <img src="./assets/equation.svg">
