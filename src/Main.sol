@@ -19,8 +19,7 @@ contract Main {
 
     // Floor price of asset
     uint256 public floorPrice; // p
-    /* maximum to increase by.  Max factor of 3.16227766017x if t can't be smaller than 1.  
-    With some funky math we can have t be 0.1 or smaller and achieve a greater maxima */
+    /*   With some funky math we can have t be 0.1 or smaller and achieve a greater maxima */
     uint256 public maxima; // t
 
     // Both used to calculate t //
