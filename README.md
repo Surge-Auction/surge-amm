@@ -5,6 +5,8 @@
 ![Equation](./assets/equation.svg)
 <img src="./assets/equation.svg">
 
+[Desmos Graph](https://www.desmos.com/calculator/9swhjwd9tv)
+
 ## Getting Started
 ```sh
 forge install
