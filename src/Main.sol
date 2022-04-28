@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.13;
 
+import "prb-math/PRBMathUD60x18.sol";
+
 contract Main {
+    using PRBMathUD60x18 for uint256;
     // Custom log curve for single sided assets
     // Graph vvvv
     // https://www.desmos.com/calculator/mh4drcwkqt
@@ -22,13 +25,18 @@ contract Main {
     uint256 public maxima; // t
 
     // Both used to calculate t //
-     // (timeStamp + decayLength) - block.timestamp = t | Calculated in function to save SLOAD
+     // (timeStamp + decayLength) - block.timestamp / decayLength = t | Calculated in function to save SLOAD
     // Timestamp of last minter
     uint256 public timeStamp;
     // # of blocks to decay starting from last mint to get the original price
     uint256 public decayLength;
    
- 
+    constructor(uint256 _floorPrice, uint256 _maxima, uint256 _decayLength) {
+        floorPrice = _floorPrice;
+        maxima = _maxima;
+        decayLength = _decayLength; 
+    }
+
     function sqrt(uint256 x) internal pure returns (uint256 z) {
         assembly {
             // This segment is to get a reasonable initial estimate for the Babylonian method.
@@ -93,13 +101,21 @@ contract Main {
 
     function calcPrice() public returns (uint256) {
         if ((timeStamp + decayLength) - block.timestamp > 1) {
-            uint256 t = (timeStamp + decayLength) - block.timestamp;
-            uint256 ratio = maxima/t;
+            uint256 t = ((timeStamp + decayLength) - block.timestamp);
+            uint256 ratio = maxima.div(t);
             uint256 squaredValues = sqrt(ratio);
-            uint256 y = squaredValues*floorPrice;
-            return y;
+            uint256 currentPrice = squaredValues.mul(floorPrice);
+            return currentPrice;
         } else {
             return floorPrice;
         }
+    }
+
+    
+    function setVariables(uint256 _floorPrice, uint256 _maxima, uint256 _timeStamp, uint256 _decayLength) public {
+        floorPrice = _floorPrice;
+        maxima = _maxima;
+        timeStamp = _timeStamp;
+        decayLength = _decayLength;
     }
 }
