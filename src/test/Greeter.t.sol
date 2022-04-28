@@ -31,8 +31,27 @@ contract CustomLogTest is Test {
         // uint256 _maxima 
         // uint256 _timeStamp 
         // uint256 _decayLength
+        // asserted values retrieved from Desmos
         main.setVariables(1e18, 10, 0, 10);
-        vm.warp(5);
-        main.calcPrice();
+        vm.warp(1);
+        uint256 price1 = main.calcPrice();
+        assertEq(price1, 1054092553);
+     
+        vm.warp(2);
+        uint256 price2 = main.calcPrice();
+        assertEq(price2, 1118033988);
+    
+        vm.warp(3);
+        uint256 price3 = main.calcPrice();
+        assertEq(price3, 1195228609);
+   
+        vm.warp(8);
+        uint256 price8 = main.calcPrice();
+        assertEq(price8, 2236067977);
+ 
+        vm.warp(9);
+        uint256 price9 = main.calcPrice();
+        assertEq(price9, 1000000000000000000);
+ 
     }
 }
