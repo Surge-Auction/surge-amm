@@ -32,6 +32,7 @@ contract CustomLogTest is Test {
         // uint256 _timeStamp 
         // uint256 _decayLength
         // asserted values retrieved from Desmos
+        // https://www.desmos.com/calculator/ty3uhgfhmc
         main.setVariables(1e18, 10, 0, 10);
         vm.warp(1);
         uint256 price1 = main.calcPrice();
