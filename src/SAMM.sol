@@ -122,19 +122,20 @@ contract SAMM {
         if ((_timeStamp + _decayLength) - block.timestamp > 1) {
         
         // I'm sorry but we gotta work through the solution bottom to top if we wanna save  
-        // 38 gas
+        // 48 gas
         uint256 currentPrice = 
-            // 
+            // solving floorPrice * result of √x/t
             _floorPrice.mul(
-            // solving for √x/t
-            sqrt(
+            // solving √x/t
+                sqrt(
             // solving x/t
-            maxima.div(
+                    maxima.div(
             // solving for t
-            (_timeStamp + _decayLength) - block.timestamp
-            )
-            ));
-
+                        (_timeStamp + _decayLength) - block.timestamp
+                    )
+                )
+            );
+            
             return currentPrice;
         } else {
             return _floorPrice;
