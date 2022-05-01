@@ -1,8 +1,10 @@
-# Variable-Price-Auction • [![tests](https://github.com/abrandec/variable-price-auction/actions/workflows/tests.yml/badge.svg)](https://github.com/abradec/variable-price-auction/actions/workflows/tests.yml) [![lints](https://github.com/abrandec/variable-price-auction/actions/workflows/lints.yml/badge.svg)](https://github.com/abrandec/variable-price-auction/actions/workflows/lints.yml) ![GitHub](https://img.shields.io/github/license/abrandec/variable-price-auction)  ![GitHub package.json version](https://img.shields.io/github/package-json/v/abrandec/variable-price-auction)
+# SAMM - Surge Auction Market Maker • [![tests](https://github.com/abrandec/variable-price-auction/actions/workflows/tests.yml/badge.svg)](https://github.com/abradec/variable-price-auction/actions/workflows/tests.yml) [![lints](https://github.com/abrandec/variable-price-auction/actions/workflows/lints.yml/badge.svg)](https://github.com/abrandec/variable-price-auction/actions/workflows/lints.yml) ![GitHub](https://img.shields.io/github/license/abrandec/variable-price-auction)  ![GitHub package.json version](https://img.shields.io/github/package-json/v/abrandec/variable-price-auction)
 
 <img src="./assets/equation.svg">
 
 [Desmos Graph](https://www.desmos.com/calculator/9swhjwd9tv)
+
+// TODO: Create an equation to solve for t
 
 ## Getting Started
 ```sh
@@ -19,8 +21,8 @@ lib
 ├─ clones-with-immutable-args — https://github.com/wighawag/clones-with-immutable-args
 src
 ├─ tests
-│  └─ blank.t — ""
-└─ blank — ""
+│  └─ SAMM.t — "SAMM Tests"
+└─ SAMM.sol — "SAMM base implementation"
 ```
 
 ## Development

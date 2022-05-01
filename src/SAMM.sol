@@ -3,22 +3,23 @@ pragma solidity 0.8.13;
 
 import "prb-math/PRBMathUD60x18.sol";
 
-contract Main {
+/// @notice Surge Auction Market Maker for single sided assets
+contract SAMM {
     using PRBMathUD60x18 for uint256;
-    // Custom log curve for single sided assets
-    // Graph vvvv
+    
+    // Graph vvvv (does not have an equation to solve for t)
     // https://www.desmos.com/calculator/mh4drcwkqt
+
     // y = p*√x/t
     // y = finalPrice
     // p = floorPrice
     // x = maxima
-    // ✨  If t < 1 then the rest of the equation isn't computed and calcPrice returns floorPrice ✨ //
-    // t = (timeStamp + decayLength) - block.timestamp.
-    // decayLength = # of blocks to decay till floorPrice
-    //Reminder: t =< x
-    // The smaller t becomes the more the price increases
-    // If I didn't divide x/t then "explosiveness" happens when closer to the floor price
-    // Better UX experience all around doing that
+
+    // t = affects the price.  If x/t = 1 then y = floorPrice as y = p√1 -> y = p*1.  
+    // If t is smaller than x then price increases.  e.i. y = p√10/1 -> y = p*3.16227766017
+    // If t is larger than x then price decreases.  e.i. y = p√10/20 -> y = p*0.158113883 
+    
+    // SurgeLength = # of blocks to decay 1 point
 
     // Floor price of asset
     uint256 public floorPrice; // p
@@ -28,9 +29,9 @@ contract Main {
      // (timeStamp + decayLength) - block.timestamp / decayLength = t | Calculated in function to save SLOAD
     // Timestamp of last minter
     uint256 public timeStamp;
-    // # of blocks to decay starting from last mint to get the original price
+    // # of blocks to decay 1 unit
     uint256 public decayLength;
-   
+    
     constructor(uint256 _floorPrice, uint256 _maxima, uint256 _decayLength) {
         floorPrice = _floorPrice;
         maxima = _maxima;
@@ -98,24 +99,52 @@ contract Main {
             }
         }
     }
-
-    function calcPrice() public returns (uint256) {
-        if ((timeStamp + decayLength) - block.timestamp > 1) {
-            uint256 t = ((timeStamp + decayLength) - block.timestamp);
-            uint256 ratio = maxima.div(t);
-            uint256 squaredValues = sqrt(ratio);
-            uint256 currentPrice = squaredValues.mul(floorPrice);
-            return currentPrice;
-        } else {
-            return floorPrice;
-        }
-    }
-
-    
+  
     function setVariables(uint256 _floorPrice, uint256 _maxima, uint256 _timeStamp, uint256 _decayLength) public {
         floorPrice = _floorPrice;
         maxima = _maxima;
         timeStamp = _timeStamp;
         decayLength = _decayLength;
+    }
+
+    // allow admin/owner to set how long x-t = 0 should at for
+    // & decay rate with lowest price willing to sell at
+    // if (x-t) < 0, then convert to uint and add maxima to it. 
+    // Need to solve for t differently to get proper decay effect
+    // Variables in equation that solves for t:
+    // Constant iteration and never changes: blockTimestamp
+    // 
+    function calcPrice() public returns (uint256) {
+        uint256 _timeStamp = timeStamp;
+        uint256 _decayLength = decayLength;
+        uint256 _floorPrice = floorPrice;
+
+        if ((_timeStamp + _decayLength) - block.timestamp > 1) {
+        
+        // I'm sorry but we gotta work through the solution bottom to top if we wanna save  
+        // 38 gas
+        uint256 currentPrice = 
+            // 
+            _floorPrice.mul(
+            // solving for √x/t
+            sqrt(
+            // solving x/t
+            maxima.div(
+            // solving for t
+            (_timeStamp + _decayLength) - block.timestamp
+            )
+            ));
+
+            return currentPrice;
+        } else {
+            return _floorPrice;
+        }
+    }
+
+    function mint() public returns (bool) {
+            // update timeStamp
+            // calculate price
+            timeStamp = block.timestamp;
+
     }
 }
