@@ -111,8 +111,6 @@ contract SAMM {
     // Need to solve for t differently to get proper decay effect
 
     function calcPrice() public returns (uint256) {
-        uint256 _floorPrice = floorPrice;
-
         // solving x/t
         uint256 ratio = maxima.div((timeStamp + surgeLength) - block.timestamp);
         if (ratio != 1) {
@@ -120,7 +118,7 @@ contract SAMM {
         // I'm sorry but we gotta work through the solution bottom to top if we wanna save gas
         uint256 currentPrice = 
             // solving floorPrice * result of √x/t
-            _floorPrice.mul(
+            floorPrice.mul(
                 // solving √x/t
                 sqrt(
                     // x/t solved
@@ -130,7 +128,7 @@ contract SAMM {
 
             return currentPrice;
         } else {
-            return _floorPrice;
+            return floorPrice;
         }
     }
 
