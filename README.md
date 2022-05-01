@@ -1,4 +1,4 @@
-# SAMM - Surge Auction Market Maker • [![tests](https://github.com/abrandec/variable-price-auction/actions/workflows/tests.yml/badge.svg)](https://github.com/abradec/variable-price-auction/actions/workflows/tests.yml) [![lints](https://github.com/abrandec/variable-price-auction/actions/workflows/lints.yml/badge.svg)](https://github.com/abrandec/variable-price-auction/actions/workflows/lints.yml) ![GitHub](https://img.shields.io/github/license/abrandec/variable-price-auction)  ![GitHub package.json version](https://img.shields.io/github/package-json/v/abrandec/variable-price-auction)
+# SAMM - Surge Auction Market Maker • [![tests](https://github.com/abrandec/surge-amm/actions/workflows/tests.yml/badge.svg)](https://github.com/abradec/surge-amm/actions/workflows/tests.yml) [![lints](https://github.com/abrandec/surge-amm/actions/workflows/lints.yml/badge.svg)](https://github.com/abrandec/surge-amm/actions/workflows/lints.yml) ![GitHub](https://img.shields.io/github/license/abrandec/surge-amm)  ![GitHub package.json version](https://img.shields.io/github/package-json/v/abrandec/surge-amm)
 
 <img src="./assets/equation.svg">
 
