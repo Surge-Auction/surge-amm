@@ -25,17 +25,16 @@ contract SAMM {
     uint256 public floorPrice; // p
     uint256 public maxima; // t
 
-    // Both used to calculate t //
-     // (timeStamp + decayLength) - block.timestamp / decayLength = t | Calculated in function to save SLOAD
-    // Timestamp of last minter
+    // calculate t using these 2 variables
+    // TODO: Bitpack into 1 uint256 (uint128+uint128)
     uint256 public timeStamp;
     // # of blocks to decay 1 unit
-    uint256 public decayLength;
+    uint256 public surgeLength;
     
-    constructor(uint256 _floorPrice, uint256 _maxima, uint256 _decayLength) {
+    constructor(uint256 _floorPrice, uint256 _maxima, uint256 _surgeLength) {
         floorPrice = _floorPrice;
         maxima = _maxima;
-        decayLength = _decayLength; 
+        surgeLength = _surgeLength; 
     }
 
     function sqrt(uint256 x) internal pure returns (uint256 z) {
@@ -104,38 +103,31 @@ contract SAMM {
         floorPrice = _floorPrice;
         maxima = _maxima;
         timeStamp = _timeStamp;
-        decayLength = _decayLength;
+        surgeLength = _decayLength;
     }
 
-    // allow admin/owner to set how long x-t = 0 should at for
+    // allow admin/owner to set how long x/t = 1 should at for
     // & decay rate with lowest price willing to sell at
-    // if (x-t) < 0, then convert to uint and add maxima to it. 
     // Need to solve for t differently to get proper decay effect
-    // Variables in equation that solves for t:
-    // Constant iteration and never changes: blockTimestamp
-    // 
+
     function calcPrice() public returns (uint256) {
-        uint256 _timeStamp = timeStamp;
-        uint256 _decayLength = decayLength;
         uint256 _floorPrice = floorPrice;
 
-        if ((_timeStamp + _decayLength) - block.timestamp > 1) {
+        // solving x/t
+        uint256 ratio = maxima.div((timeStamp + surgeLength) - block.timestamp);
+        if (ratio != 1) {
         
-        // I'm sorry but we gotta work through the solution bottom to top if we wanna save  
-        // 48 gas
+        // I'm sorry but we gotta work through the solution bottom to top if we wanna save gas
         uint256 currentPrice = 
             // solving floorPrice * result of √x/t
             _floorPrice.mul(
-            // solving √x/t
+                // solving √x/t
                 sqrt(
-            // solving x/t
-                    maxima.div(
-            // solving for t
-                        (_timeStamp + _decayLength) - block.timestamp
-                    )
+                    // x/t solved
+                    ratio
                 )
             );
-            
+
             return currentPrice;
         } else {
             return _floorPrice;
