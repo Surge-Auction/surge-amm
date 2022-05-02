@@ -3,7 +3,7 @@ pragma solidity 0.8.13;
 
 import "prb-math/PRBMathUD60x18.sol";
 
-/// @notice Surge Auction Market Maker for single sided assets
+/// @notice Surge Auction Market Maker for price discovery of single sided assets
 contract SAMM {
     using PRBMathUD60x18 for uint256;
     
@@ -19,22 +19,23 @@ contract SAMM {
     // If t is smaller than x then price increases.  e.i. y = p√10/1 -> y = p*3.16227766017
     // If t is larger than x then price decreases.  e.i. y = p√10/20 -> y = p*0.158113883 
     
-    // SurgeLength = # of blocks to decay 1 point
-
     // Floor price of asset
     uint256 public floorPrice; // p
+  
+    // How long to stay @ floor price until decaying below
+    uint256 public floorPriceLength;
+
     uint256 public maxima; // t
 
-    // calculate t using these 2 variables
-    // TODO: Bitpack into 1 uint256 (uint128+uint128)
-    uint256 public timeStamp;
-    // # of blocks to decay 1 unit
-    uint256 public surgeLength;
-    
-    constructor(uint256 _floorPrice, uint256 _maxima, uint256 _surgeLength) {
+    uint256 public lastMintTimestamp;
+   
+    uint256 public surgeAmount;
+
+    constructor(uint256 _floorPrice, uint256 _maxima, uint256 _lastMintTimestamp, uint256 _surgeAmount) {
         floorPrice = _floorPrice;
         maxima = _maxima;
-        surgeLength = _surgeLength; 
+        lastMintTimestamp = _lastMintTimestamp;
+        surgeAmount = _surgeAmount;
     }
 
     function sqrt(uint256 x) internal pure returns (uint256 z) {
@@ -99,43 +100,51 @@ contract SAMM {
         }
     }
   
-    function setVariables(uint256 _floorPrice, uint256 _maxima, uint256 _timeStamp, uint256 _decayLength) public {
+    function changeVariables(uint256 _floorPrice, uint256 _maxima, uint256 _lastMintTimestamp, uint256 _surgeAmount) public {
         floorPrice = _floorPrice;
         maxima = _maxima;
-        timeStamp = _timeStamp;
-        surgeLength = _decayLength;
+        lastMintTimestamp = _lastMintTimestamp;
+        surgeAmount = _surgeAmount;
     }
 
-    // allow admin/owner to set how long x/t = 1 should at for
-    // & decay rate with lowest price willing to sell at
-    // Need to solve for t differently to get proper decay effect
-
     function calcPrice() public returns (uint256) {
-        // solving x/t
-        uint256 ratio = maxima.div((timeStamp + surgeLength) - block.timestamp);
-        if (ratio != 1) {
-        
+     
+        // compare delta & surge amount
+        if ((lastMintTimestamp + surgeAmount) - block.timestamp > surgeAmount - 100) {
+
         // I'm sorry but we gotta work through the solution bottom to top if we wanna save gas
+        uint256 currentPrice =
+            // solving floorPrice * result of √x/t
+            floorPrice.mul(
+                // solving √x/t
+                sqrt(
+                    // solving x/t
+                    maxima.div(
+                        (surgeAmount + block.timestamp) - lastMintTimestamp
+                        )
+                )
+            );
+            return currentPrice;    
+        } else if((lastMintTimestamp + surgeAmount) - block.timestamp < 200) {
         uint256 currentPrice = 
             // solving floorPrice * result of √x/t
             floorPrice.mul(
                 // solving √x/t
                 sqrt(
-                    // x/t solved
-                    ratio
+                    // solving x/t.  Calculated diff from when x/t > 1
+                    maxima.div(
+                        (surgeAmount + block.timestamp) - lastMintTimestamp
+                        )
                 )
             );
-
             return currentPrice;
         } else {
-            return floorPrice;
+             return floorPrice;
         }
     }
 
     function mint() public returns (bool) {
-            // update timeStamp
-            // calculate price
-            timeStamp = block.timestamp;
-
+            lastMintTimestamp = block.timestamp;
+            // calculate surgeAmount
     }
 }

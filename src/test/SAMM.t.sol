@@ -17,12 +17,13 @@ contract SAMMTest is Test {
     SAMM public sAMM;
 
     // Constructor values
-    uint256 _floorPrice;
-    uint256 _maxima;
-    uint256 _decayLength;
+    uint256 floorPrice = 0.1e18;
+    uint256 maxima = 1000;
+    uint256 timeStamp = 0;
+    uint256 surgeAmount = 700;
 
     function setUp() public {
-        sAMM = new SAMM(_floorPrice, _maxima, _decayLength);
+        sAMM = new SAMM(floorPrice, maxima, timeStamp, surgeAmount);
         console.log(unicode"🧪 Testing Something...");
     }   
 
@@ -35,17 +36,18 @@ contract SAMMTest is Test {
         // https://www.desmos.com/calculator/ty3uhgfhmc
         // We can increase the granularity by increasing the maxima
         // and possibly switch to seconds instead of using block.timestamp   
-        sAMM.setVariables(0.1e18, 1000, 0, 1000);
         
         vm.warp(100);
+        sAMM.mint();
+        vm.warp(101);
         uint256 price1 = sAMM.calcPrice();
         assertEq(price1, 105409255);
      
-        vm.warp(200);
+        vm.warp(102);
         uint256 price2 = sAMM.calcPrice();
         assertEq(price2, 111803399);
     
-        vm.warp(300);
+        vm.warp(103);
         uint256 price3 = sAMM.calcPrice();
         assertEq(price3, 119522861);
 
@@ -72,5 +74,13 @@ contract SAMMTest is Test {
         vm.warp(900);
         uint256 price9 = sAMM.calcPrice();
         assertEq(price9, 316227766);
+
+        vm.warp(1000);
+        uint256 price10 = sAMM.calcPrice();
+        assertEq(price10, 316227766);
+
+        vm.warp(1200);
+        uint256 price11 = sAMM.calcPrice();
+        assertEq(price11, 316227766);
     }
 }
